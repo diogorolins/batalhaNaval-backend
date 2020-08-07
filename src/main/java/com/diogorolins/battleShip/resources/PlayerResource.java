@@ -1,7 +1,6 @@
 package com.diogorolins.battleShip.resources;
 
 import java.net.URI;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,12 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.diogorolins.battleShip.config.security.TokenService;
-import com.diogorolins.battleShip.model.Invite;
 import com.diogorolins.battleShip.model.Player;
 import com.diogorolins.battleShip.model.dto.PlayerCreateDTO;
-import com.diogorolins.battleShip.model.dto.PlayerInviteDTO;
-import com.diogorolins.battleShip.model.enums.StatusInvite;
-import com.diogorolins.battleShip.services.InviteService;
 import com.diogorolins.battleShip.services.PlayerService;
 
 @RestController
@@ -36,9 +31,7 @@ public class PlayerResource {
 	@Autowired
 	private TokenService tokenService;
 	
-	@Autowired
-	private InviteService inviteService;
-
+	
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Player>> findAll(){
 		List<Player> players = playerService.findAll();
@@ -74,45 +67,7 @@ public class PlayerResource {
 		return ResponseEntity.ok().body(players);
 	}
 	
-	@RequestMapping(method = RequestMethod.POST, value = "/invite")
-	public ResponseEntity<Invite> sendInvite(@RequestBody PlayerInviteDTO playerId, HttpServletRequest request){
-		String emailPlayer = tokenService.getUsername(tokenService.getToken(request));
-		Player playerFrom = playerService.findyEmail(emailPlayer);
-		Player playerTo = playerService.findById(playerId.getPlayerId());
-		Invite invite = inviteService.insert(new Invite(null, playerFrom, playerTo, null, StatusInvite.WAITING, new Date()));
-		URI uri = ServletUriComponentsBuilder
-				.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(invite.getId()).toUri();
-		return ResponseEntity.created(uri).body(invite);
-	}
 	
-	@RequestMapping(method = RequestMethod.GET, value = "/invite/received")
-	public ResponseEntity<List<Invite>> searchInvitesReceived(HttpServletRequest request){
-		String emailPlayer = tokenService.getUsername(tokenService.getToken(request));
-		Player player = playerService.findyEmail(emailPlayer);
-		List<Invite> invites = inviteService.searchInviteReceived(player);
-		return ResponseEntity.ok().body(invites);
-	}
-	
-	@RequestMapping(method = RequestMethod.GET, value = "/invite/sent")
-	public ResponseEntity<List<Invite>> searchInvitesSent(HttpServletRequest request){
-		String emailPlayer = tokenService.getUsername(tokenService.getToken(request));
-		Player player = playerService.findyEmail(emailPlayer);
-		List<Invite> invites = inviteService.searchInviteSent(player);
-		return ResponseEntity.ok().body(invites);
-	}
-	
-	@RequestMapping(method = RequestMethod.PATCH, value = "/invite/decline/{id}")
-	public ResponseEntity<Invite> declineInvite(@PathVariable Integer id){
-		Invite invite = inviteService.declineInvite(id);
-		return ResponseEntity.ok().body(invite);
-	}
-	
-	@RequestMapping(method = RequestMethod.PATCH, value = "/invite/accept/{id}")
-	public ResponseEntity<Invite> acceptInvite(@PathVariable Integer id){
-		Invite invite = inviteService.acceptInvite(id);
-		return ResponseEntity.ok().body(invite);
-	}
 	
 	
 	

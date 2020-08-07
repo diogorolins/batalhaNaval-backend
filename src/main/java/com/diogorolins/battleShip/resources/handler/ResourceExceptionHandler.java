@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.diogorolins.battleShip.exception.ObjectNotFoundException;
-import com.diogorolins.battleShip.exception.GameStartedExeption;
 
 @ControllerAdvice
 public class ResourceExceptionHandler {
@@ -37,15 +36,7 @@ public class ResourceExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
 	}
 	
-	@ExceptionHandler(GameStartedExeption.class)
-	public ResponseEntity<StandardError> parseIntError(GameStartedExeption e, HttpServletRequest request) {
-		StandardError err = new StandardError(System.currentTimeMillis(), 
-				HttpStatus.BAD_REQUEST.value(),
-				"Jogo já iniciado.", 
-				e.getMessage(), 
-				request.getRequestURI());		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
-	}
+	
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<StandardError> authentionError(MethodArgumentNotValidException e, HttpServletRequest request) {

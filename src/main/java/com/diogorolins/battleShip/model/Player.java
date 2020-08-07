@@ -10,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,44 +17,36 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Player implements UserDetails {	
+public class Player implements UserDetails {
 	private static final long serialVersionUID = 1L;
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	private String name;
 	private String email;
-	
+
 	@JsonIgnore
 	private String password;
-	
+
 	private boolean loggged = false;
-	
-	@JsonIgnore
-	@ManyToMany(mappedBy = "players")
-	private List<Game> games = new ArrayList<>();
-	
+
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "players")
 	private List<Profile> profiles = new ArrayList<>();
-	
-	@JsonIgnore
-	@OneToMany
-	private List<Invite> invites = new ArrayList<>();
-	
+
 	private Boolean isAdm = false;
-	
+
 	public Player() {
-		
+
 	}
 
-	public Player(Integer id, String name, String email, String password, List<Game> games, Boolean isAdm) {
+	public Player(Integer id, String name, String email, String password, Boolean isAdm) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.email = email;
 		this.password = password;
-		this.games = games;
+
 		this.isAdm = isAdm;
 	}
 
@@ -86,15 +77,6 @@ public class Player implements UserDetails {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-		
-	public List<Game> getGames() {
-		return games;
-	}
-
-	public void setGames(List<Game> games) {
-		this.games = games;
-	}
-	
 
 	public boolean isLoggged() {
 		return loggged;
@@ -103,16 +85,6 @@ public class Player implements UserDetails {
 	public void setLoggged(boolean loggged) {
 		this.loggged = loggged;
 	}
-	
-
-	public List<Invite> getInvites() {
-		return invites;
-	}
-
-	public void setInvites(List<Invite> invites) {
-		this.invites = invites;
-	}
-	
 
 	public Boolean getIsAdm() {
 		return isAdm;
@@ -181,8 +153,5 @@ public class Player implements UserDetails {
 	public boolean isEnabled() {
 		return true;
 	}
-
-	
-	
 
 }
