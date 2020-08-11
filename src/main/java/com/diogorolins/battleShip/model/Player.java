@@ -30,6 +30,10 @@ public class Player implements UserDetails {
 	private String password;
 
 	private boolean loggged = false;
+	
+	@JsonIgnore
+	@ManyToMany(mappedBy = "players")
+	private List<Game> games = new ArrayList<>();
 
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "players")
 	private List<Profile> profiles = new ArrayList<>();
@@ -40,13 +44,13 @@ public class Player implements UserDetails {
 
 	}
 
-	public Player(Integer id, String name, String email, String password, Boolean isAdm) {
+	public Player(Integer id, String name, String email, String password, List<Game> games, Boolean isAdm) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.email = email;
 		this.password = password;
-
+		this.games = games;
 		this.isAdm = isAdm;
 	}
 

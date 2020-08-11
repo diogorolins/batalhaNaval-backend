@@ -7,9 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.diogorolins.battleShip.exception.EmailAlreadyExistsException;
 import com.diogorolins.battleShip.exception.ObjectNotFoundException;
 import com.diogorolins.battleShip.model.Player;
-import com.diogorolins.battleShip.model.dto.PlayerCreateDTO;
+import com.diogorolins.battleShip.model.dto.PlayerDTO;
 import com.diogorolins.battleShip.repositories.PlayerRepository;
 
 
@@ -22,7 +23,7 @@ public class PlayerService {
 	@Autowired
 	private BCryptPasswordEncoder pe;
 
-	public Player convertFromDto(PlayerCreateDTO objDto) {
+	public Player convertFromDto(PlayerDTO objDto) {
 		Player player = new Player();
 		player.setName(objDto.getName());
 		player.setEmail(objDto.getEmail());
@@ -31,6 +32,13 @@ public class PlayerService {
 	}
 
 	public Player insert(Player player) {
+		
+		Optional<Player> playerExists = repository.findByEmail(player.getEmail());
+		
+		if(playerExists.isPresent()) {
+			throw new EmailAlreadyExistsException("email já cadastrado");
+		}
+		
 		return repository.save(player);
 	}
 	
@@ -55,16 +63,7 @@ public class PlayerService {
 		repository.save(player);
 	}
 
-	public void setPlayerLogOff(Integer id) {
-		Player player = repository.findById(id).get();
-		player.setLoggged(false);
-		repository.save(player);
-		
-	}
 
-	public List<Player> findLoggedPlayers(String emailPlayer) {
-		return repository.findLoggedPlayers(emailPlayer);
-	}
 	
 
 }

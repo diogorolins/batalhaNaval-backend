@@ -9,11 +9,11 @@ import org.hibernate.validator.constraints.Length;
 
 import com.diogorolins.battleShip.model.Player;
 
-public class PlayerCreateDTO implements Serializable{
+public class PlayerDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	@NotEmpty
-	@Length(min=5, max=80, message = "Deve ter entre 5 e 80 caracteres.")
+	@Length(min=5, max=80, message = "O nome deve ter entre 5 e 80 caracteres.")
 	private String name;
 	
 	@NotEmpty
@@ -21,11 +21,11 @@ public class PlayerCreateDTO implements Serializable{
 	private String email;
 	private String password;
 
-	public PlayerCreateDTO() {
+	public PlayerDTO() {
 		
 	}
 	
-	public PlayerCreateDTO(Player player) {
+	public PlayerDTO(Player player) {
 		this.name = player.getName();
 		this.email = player.getEmail();
 		this.password = player.getPassword();
