@@ -25,6 +25,7 @@ public class Position implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "ship_id")	
 	private Ship ship;
+	
 	private StatusPosition status;
 
 	public Position() {

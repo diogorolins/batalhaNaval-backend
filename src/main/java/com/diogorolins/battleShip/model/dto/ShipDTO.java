@@ -3,44 +3,55 @@ package com.diogorolins.battleShip.model.dto;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import com.diogorolins.battleShip.model.Position;
+import com.diogorolins.battleShip.model.Ship;
 
 public class ShipDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	private Integer type;
-	private Integer player;
-	private List<Position> positions = new ArrayList<>();	
+	private Integer id;
+	
+	private boolean destroyed;
+
+	private List<String> position = new ArrayList<>();	
 	
 	public ShipDTO() {
 		
 	}
-
-
-	public Integer getType() {
-		return type;
+	
+	public ShipDTO(Ship ship) {
+		this.id = ship.getShipType().getId();
+		this.destroyed = false;
+		this.position = ship.getPositions().stream().map(s -> s.getPosition()).collect(Collectors.toList());
 	}
 
-	public void setType(Integer type) {
-		this.type = type;
+
+	public Integer getId() {
+		return id;
 	}
 
-	public Integer getPlayer() {
-		return player;
+	public void setId(Integer typeId) {
+		this.id = typeId;
 	}
 
-	public void setPlayer(Integer player) {
-		this.player = player;
+	public List<String> getPosition() {
+		return position;
 	}
 
-	public List<Position> getPositions() {
-		return positions;
+	public void setPosition(List<String> positions) {
+		this.position = positions;
 	}
 
-	public void setPosition(List<Position> positions) {
-		this.positions = positions;
+	public boolean isDestroyed() {
+		return destroyed;
 	}
+
+	public void setDestroyed(boolean destroyed) {
+		this.destroyed = destroyed;
+	}
+	
+
 	
 	
 

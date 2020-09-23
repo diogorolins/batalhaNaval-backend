@@ -1,76 +1,105 @@
 package com.diogorolins.battleShip.services;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.diogorolins.battleShip.exception.ObjectNotFoundException;
 import com.diogorolins.battleShip.model.Game;
 import com.diogorolins.battleShip.model.Player;
-import com.diogorolins.battleShip.model.Position;
 import com.diogorolins.battleShip.model.Ship;
+import com.diogorolins.battleShip.model.dto.GameCompleteDTO;
 import com.diogorolins.battleShip.model.dto.GameDTO;
+import com.diogorolins.battleShip.model.dto.GamePlayerDTO;
 import com.diogorolins.battleShip.model.dto.ShipDTO;
 import com.diogorolins.battleShip.repositories.GameRepository;
+
 
 @Service
 public class GameService {
 
 	@Autowired
 	private GameRepository repository;
-
+	
 	@Autowired
 	private PlayerService playerService;
-
+	
 	@Autowired
 	private ShipService shipService;
 	
-	@Autowired 
-	private PositionService positionService;
 
-	public List<Game> findAll() {
-		return repository.findAll();
+	public boolean gameAlreadyCreated(GameDTO objDto) {		
+		Optional<Game> gameExists = getById(objDto.getId());
+		if(gameExists.isPresent()) {
+			return true;
+		} 
+		return false;
 	}
 
-	public Game findById(Integer id) {
-		Optional<Game>  obj = repository.findById(id);
-		return obj.orElseThrow(() -> new ObjectNotFoundException("Resource not found"));
+	public Optional<Game> getById(String id) {
+		return repository.findById(id);
 	}
 
-	public Game convertFromDTO(GameDTO objDto) {
-
-		List<Player> players = new ArrayList<>();
-		Player player1 = playerService.findById(objDto.getPlayer1());
-		Player player2 = playerService.findById(objDto.getPlayer2());
-		players.addAll(Arrays.asList(player1, player2));
-
-		return new Game(null, new Date(), players, null, null);
+	public Game getGameFromDto(GameDTO objDto) {
+		
+		Player player = playerService.findById(objDto.getPlayer().getId());
+		Game game = createGame(objDto, player);
+		insert(game);
+		player.getGames().add(game);
+		List<Ship> ships = shipService.getShipsFromDTO(objDto.getPlayer().getShips(), player, game);
+		game.getShips().addAll(ships);
+		return game;
 	}
-
-	public Game createGame(Game game) {
-
+	
+	public Game insert(Game game) {
 		return repository.save(game);
 	}
 
-	public Game insertShips(List<ShipDTO> shipsDTO, Integer id) {
-		Game game = findById(id);
-		for (ShipDTO dto : shipsDTO) {
-			Ship ship = shipService.convertFromDTO(dto, game);
-			List<Position> positions = positionService.insert(dto.getPositions());
-			ship.setPositions(positions);
-			for(Position position : ship.getPositions()) {
-				position.setShip(ship);
-			}
-			shipService.insert(ship);
-			game.getShips().add(ship);
-		}
-
-		return repository.save(game);
+	
+	private Game createGame(GameDTO objDto, Player player) {
+		Game game = new Game();
+		game.setId(objDto.getId());
+		game.getPlayers().add(player);
+		game.setStartDate(new Date());
+		return game;
 	}
+
+
+	public Game insertPlayer(GameDTO objDto) {
+		Player player = playerService.findById(objDto.getPlayer().getId());
+		Game game = repository.findById(objDto.getId()).get();
+		player.getGames().add(game);
+		game.getPlayers().add(player);
+		List<Ship> ships = shipService.getShipsFromDTO(objDto.getPlayer().getShips(), player, game);
+		game.getShips().addAll(ships);
+		return insert(game);
+	}
+
+	public GameCompleteDTO convertToDTO(Game game) {
+		GameCompleteDTO gameDto = new GameCompleteDTO();
+		gameDto.setId(game.getId());
+		for(Player player : game.getPlayers()) {
+			GamePlayerDTO playerDto = new GamePlayerDTO();
+			playerDto.setId(player.getId());
+			playerDto.setShips(game.getShips().stream()
+					.filter(f -> f.getPlayer().getId() == player.getId())
+					.map(s -> new ShipDTO(s)).collect(Collectors.toList()));
+		gameDto.getPlayers().add(playerDto);
+	}
+		
+			
+
+		return gameDto;
+	}
+
+	public Game insertWinner(Game game, Player player) {
+		game.setWinner(player);
+		return insert(game);
+	}
+
+
+	
 
 }

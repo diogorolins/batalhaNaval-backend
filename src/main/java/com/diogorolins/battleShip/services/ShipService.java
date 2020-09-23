@@ -1,41 +1,56 @@
 package com.diogorolins.battleShip.services;
 
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.diogorolins.battleShip.model.Game;
 import com.diogorolins.battleShip.model.Player;
 import com.diogorolins.battleShip.model.Ship;
-import com.diogorolins.battleShip.model.ShipType;
 import com.diogorolins.battleShip.model.dto.ShipDTO;
 import com.diogorolins.battleShip.repositories.ShipRepository;
 
+
+
 @Service
 public class ShipService {
-
+	
 	@Autowired
 	private ShipRepository repository;
-
+	
 	@Autowired
-	private PlayerService playerService;
-
+	private ShipTypeService shipTypeService;
+	
 	@Autowired
-	private ShipTypeService typeService;
+	private PositionService positionService;
 
-	public Ship insert(Ship ship) {
-		return repository.save(ship);
+	public List<Ship> getShipsFromDTO(List<ShipDTO> ships, Player player, Game game) {
+		List<Ship> shipsConverted = new ArrayList<>(); 
+		for(ShipDTO shipDTO : ships) {
+			Ship ship = new Ship();
+			ship.setGame(game);
+			ship.setShipType(shipTypeService.getbyId(shipDTO.getId()));
+			ship.setPlayer(player);
+			insert(ship);
+			ship.setPositions(positionService.getPositionsFromDto(shipDTO.getPosition(),ship));
+			insert(ship);
+			shipsConverted.add(ship);
+		}
+		
+		return shipsConverted;
+	}
+	
+	
+	public Ship insert(Ship ships) {
+		
+		return repository.save(ships);
 	}
 
-	public Ship convertFromDTO(ShipDTO dto, Game game) {
+	
 
-		Ship ship = new Ship();
-		Player player = playerService.findById(dto.getPlayer());
-		ShipType type = typeService.getbyId(dto.getType());
-		ship.setPlayer(player);
-		ship.setPositions(dto.getPositions());
-		ship.setShipType(type);
-		ship.setGame(game);
-		return ship;
-	}
+	
 
 }

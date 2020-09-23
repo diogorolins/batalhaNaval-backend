@@ -5,27 +5,37 @@ import java.io.Serializable;
 public class GameDTO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private Integer player1;
-	private Integer player2;
+	private String id;
+	private  GamePlayerDTO player;
+	
 
 	public GameDTO() {
+		
+	}
+	
+	
 
+	public GameDTO(String id, GamePlayerDTO player) {
+		this.id = id;
+		this.player = player;
 	}
 
-	public Integer getPlayer1() {
-		return player1;
+
+
+	public String getId() {
+		return id;
 	}
 
-	public void setPlayer1(Integer player1) {
-		this.player1 = player1;
+	public void setId(String id) {
+		this.id = id;
 	}
 
-	public Integer getPlayer2() {
-		return player2;
+	public GamePlayerDTO getPlayer() {
+		return player;
 	}
 
-	public void setPlayer2(Integer player2) {
-		this.player2 = player2;
+	public void setPlayer(GamePlayerDTO player) {
+		this.player = player;
 	}
 
 	

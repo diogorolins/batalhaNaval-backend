@@ -97,6 +97,16 @@ public class Player implements UserDetails {
 	public void setIsAdm(Boolean isAdm) {
 		this.isAdm = isAdm;
 	}
+	
+	
+
+	public List<Game> getGames() {
+		return games;
+	}
+
+	public void setGames(List<Game> games) {
+		this.games = games;
+	}
 
 	@Override
 	public int hashCode() {

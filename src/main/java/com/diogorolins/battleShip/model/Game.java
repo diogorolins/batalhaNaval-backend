@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
@@ -19,8 +17,7 @@ public class Game implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Integer id;
+	private String id;
 	private Date startDate;
 	
 	@ManyToMany
@@ -39,7 +36,7 @@ public class Game implements Serializable{
 	}
 
 
-	public Game(Integer id, Date startDate, List<Player> players, Player winner, List<Ship> ships) {
+	public Game(String id, Date startDate, List<Player> players, Player winner, List<Ship> ships) {
 		super();
 		this.id = id;
 		this.startDate = startDate;
@@ -49,12 +46,12 @@ public class Game implements Serializable{
 	}
 
 
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
 
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
